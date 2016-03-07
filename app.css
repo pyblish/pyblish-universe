@@ -1,0 +1,30 @@
+
+html {
+    background: white;
+    font: 400 0.875em/1.58 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #222;
+    min-width: 500px;
+}
+
+.wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-top: 150px;
+    margin-left: 24px;
+    margin-right: 24px;
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+}
+
+ul {
+    text-align: center;
+}
