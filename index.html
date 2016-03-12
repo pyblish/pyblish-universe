@@ -12,30 +12,59 @@
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="app.css">
     
-    <script id="entry-template" type="text/x-handlebars-template">
-    <tr>
-      <td class="icon"><i class="fa fa-{{icon}}"></i></td>
-      <td class="midsection">
-        <a class="author" href={{author}}>{{authorName}}</a>
-        <span class="message">{{message}}</span>
-        <a class="target" href={{target}}>{{targetName}}</a>
-        <span class="body">{{body}}</span>
-        <span class="action">{{action}}</span>
-      </td>
-      <td class="time">{{time}}</td>
-    </tr>
+    <!--
+      Small event
+    -->
+    <script id="small-event-template" type="text/x-handlebars-template">
+    <div class="event event-small">
+      <i class="icon fa fa-{{icon}}"></i>
+      <a class="author" href={{author}}>{{authorName}}</a>
+      <span class="message">{{message}}</span>
+      <a class="target" href={{target}}>{{targetName}}</a>
+      <span class="time">{{time}}</span>
+    </div>
     </script>
 
-    <script>$(function() { $("#_header").load("header.html"); });</script>
+    <!--
+      Large event
+    -->
+    <script id="large-event-template" type="text/x-handlebars-template">
+    <div class="event event-large">
+      <i class="icon fa fa-{{icon}}"></i>
+      <div class="content">
+        <span class="time">{{time}}</span>
+        <div class="midsection">
+          <a class="author" href={{author}}>{{authorName}}</a>
+          <span class="message">{{message}}</span>
+          <a class="target" href={{target}}>{{targetName}}</a>
+        </div>
+        <div class="body">
+          <img class="avatar" src="{{avatar}}"></img>
+          <span>{{body}}</span>
+        </div>
+        <span class="action">
+          <a href="{{action}}">{{actionName}}<a>
+        </span>
+      <div>
+    </div>
+    </script>
 
   </head>
   <body>
-    <header id="_header"></header>
+    <header>
+      <img src="logo.png"></img>
+      <div class="filler"></div>
+      <div><a href="/">Home</a></div>
+      <div><a href="http://learn.pyblish.com">Learn</a></div>
+      <div><a href="http://forums.pyblish.com">About</a></div>
+      <div><a href="https://github.com/pyblish/pyblish-win/wiki/installation">Install</a></div>
+    </header>
 
     <div class="wrapper">
-      <table id="events">
+      <div class="loader">Loading...</div>
+      <div id="events">
         <!-- Dynamically added -->
-      </table>
+      </div>
     </div>
 
     <script src="app.js"></script>
