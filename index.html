@@ -4,16 +4,39 @@
     <title>Pyblish</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="app.css">
+    
+    <script id="entry-template" type="text/x-handlebars-template">
+    <tr>
+      <td class="icon"><i class="fa fa-{{icon}}"></i></td>
+      <td class="midsection">
+        <a class="author" href={{authorUrl}}>{{author}}</a>
+        <span class="message">{{message}}</span>
+        <a class="target" href={{targetUrl}}>{{target}}</a>
+        <span class="body">{{body}}</span>
+        <span class="action">{{action}}</span>
+      </td>
+      <td class="time">{{time}}</td>
+    </tr>
+    </script>
   </head>
   <body>
+    <header>
+      <img src="logo.png"></img>
+    </header>
+
     <div class="wrapper">
-      <h1>Pyblish</h1>
-      <ul id="myEvents">
-      </ul>
+      <table id="events">
+        <!-- Dynamically added -->
+      </table>
     </div>
+
     <script src="app.js"></script>
-    </script>
   </body>
 </html>
