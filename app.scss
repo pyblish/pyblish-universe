@@ -1,3 +1,4 @@
+$event-height: 30px;
 
 html {
     background: white;
@@ -55,19 +56,24 @@ html {
             .event {
                 display: flex;
                 flex-direction: row;
+                align-items: center;
                 line-height: 20px;
+                padding-top: 5px;
+                padding-bottom: 5px;
                 border-bottom: 1px solid #eee;
 
-                & > * {
-                    margin: 5px;
-                    padding-right: 5px;
-                    padding-left: 5px;
-                }
-
                 .icon {
-                    text-align: center;
                     line-height: 22px;
-                    width: 15px;
+                    width: 25px;
+                    padding: 10px;
+                    align-self: flex-start;
+                }
+                
+                .author, .message, .target, .time {
+                    margin: 5px;
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    height: 100%;
                 }
 
                 .author {
@@ -92,6 +98,11 @@ html {
                 }
                 
                 &.event-large {
+                    
+                    .icon {
+                        font-size: 2em;
+                    }
+
                     .content {
                         display: flex;
                         flex-direction: column;

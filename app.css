@@ -40,16 +40,21 @@ html {
       html .wrapper #events .event {
         display: flex;
         flex-direction: row;
+        align-items: center;
         line-height: 20px;
+        padding-top: 5px;
+        padding-bottom: 5px;
         border-bottom: 1px solid #eee; }
-        html .wrapper #events .event > * {
-          margin: 5px;
-          padding-right: 5px;
-          padding-left: 5px; }
         html .wrapper #events .event .icon {
-          text-align: center;
           line-height: 22px;
-          width: 15px; }
+          width: 25px;
+          padding: 10px;
+          align-self: flex-start; }
+        html .wrapper #events .event .author, html .wrapper #events .event .message, html .wrapper #events .event .target, html .wrapper #events .event .time {
+          margin: 5px;
+          padding-left: 5px;
+          padding-right: 5px;
+          height: 100%; }
         html .wrapper #events .event .author {
           background: #efefef;
           border: 1px solid #dedede;
@@ -61,6 +66,8 @@ html {
         html .wrapper #events .event .time {
           font-size: 0.9em;
           color: #ccc; }
+        html .wrapper #events .event.event-large .icon {
+          font-size: 2em; }
         html .wrapper #events .event.event-large .content {
           display: flex;
           flex-direction: column; }
