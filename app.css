@@ -4,11 +4,20 @@ html {
   color: #222;
   min-width: 500px; }
   html header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: 10px;
     position: absolute;
     height: 30px;
     top: 0px;
     left: 0px;
     right: 0px; }
+    html header .filler {
+      width: 100%; }
+    html header a {
+      padding-left: 10px; }
     html header img {
       height: 100%;
       margin: 10px; }

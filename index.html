@@ -16,20 +16,21 @@
     <tr>
       <td class="icon"><i class="fa fa-{{icon}}"></i></td>
       <td class="midsection">
-        <a class="author" href={{authorUrl}}>{{author}}</a>
+        <a class="author" href={{author}}>{{authorName}}</a>
         <span class="message">{{message}}</span>
-        <a class="target" href={{targetUrl}}>{{target}}</a>
+        <a class="target" href={{target}}>{{targetName}}</a>
         <span class="body">{{body}}</span>
         <span class="action">{{action}}</span>
       </td>
       <td class="time">{{time}}</td>
     </tr>
     </script>
+
+    <script>$(function() { $("#_header").load("header.html"); });</script>
+
   </head>
   <body>
-    <header>
-      <img src="logo.png"></img>
-    </header>
+    <header id="_header"></header>
 
     <div class="wrapper">
       <table id="events">

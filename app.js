@@ -10,12 +10,9 @@ function basename (path) {
 
     ref.on("child_added", function(snapshot) {
         var item = snapshot.val();
-        
-        item.authorUrl = item.author;
-        item.author = basename(item.author);
-    
-        item.targetUrl = item.target;
-        item.target = basename(item.target);
+
+        item.authorName = basename(item.author);
+        item.targetName = basename(item.target);
 
         console.log(item, "added");
         append(item);
