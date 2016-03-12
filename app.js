@@ -1,5 +1,6 @@
 /*global Firebase*/
 /*global Handlebars*/
+/*global sprintf*/
 
 
 (function () {
@@ -18,6 +19,7 @@
         item.authorName = basename(item.author);
         item.targetName = basename(item.target, -2);
         item.actionName = basename(item.action);
+        item.time = formatTime(item.time);
 
         console.log(item, "added");
         append(item);
@@ -37,4 +39,21 @@
  */
 function basename (path, slice) {
     return (path ? path : "").split(/[\\/]/).slice(slice ? slice : -1).join("/");
+}
+
+function formatTime(time) {
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    var d = new Date(Date.parse(time));
+    return sprintf(
+        "%(day)s %(date)s %(month)s %(hour)s:%(minute)s",
+        {
+            "day": days[d.getDay()],
+            "month": months[d.getMonth()],
+            "date": d.getMonth(),
+            "hour": d.getHours(),
+            "minute": d.getMinutes()
+        }
+    )
 }
