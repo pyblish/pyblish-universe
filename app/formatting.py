@@ -67,7 +67,6 @@ def github_wiki(payload):
         raise TypeError("No page in edit, this is a bug")
 
     return {
-        "icon": "book",
         "event": "github-wiki",
         "action": "(compare)",
         "actionUrl": page["html_url"],
@@ -85,7 +84,6 @@ def github_wiki(payload):
 
 def github_commit_comment(payload):
     return {
-        "icon": "comment",
         "event": "github-commit-comment",
         "action": "(compare)",
         "actionUrl": payload["comment"]["html_url"],
@@ -101,7 +99,6 @@ def github_commit_comment(payload):
 
 def github_issue_comment(payload):
     return {
-        "icon": "comment",
         "event": "github-issue-comment",
         "action": "Go to comment",
         "actionUrl": payload["comment"]["html_url"],
@@ -119,7 +116,6 @@ def github_issue_comment(payload):
 
 def github_issue(payload):
     return {
-        "icon": "bug",
         "event": "github-issue",
         "action": "Go to issue",
         "actionUrl": payload["issue"]["html_url"],
