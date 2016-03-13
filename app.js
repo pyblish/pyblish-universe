@@ -1,28 +1,21 @@
 /*global Firebase*/
 /*global Handlebars*/
-/*global sprintf*/
 
 
 (function () {
     var ref = new Firebase("https://pyblish-web.firebaseio.com/events");
-    
+
     var templates = {
         "small": Handlebars.compile($("#small-event-template").html()),
         "large": Handlebars.compile($("#large-event-template").html()),
     }
 
-    ref.limitToLast(20).on("child_added", function(snapshot) {
+    ref.limitToLast(50).on("child_added", function(snapshot) {
         $(".loader").hide();  // Loader visible by default
 
         var item = snapshot.val();
-        
-        item.icon = {
-            "github-wiki": "book",
-            "github-issue": "bug",
-            "github-issue-comment": "comment",
-            "github-commit-comment": "comment",
-        }[item.event]
 
+        item.icon = iconFromEvent(item.event);
         item.authorName = basename(item.author);
         item.targetName = basename(item.target, -2);
         item.actionName = basename(item.action);
@@ -31,13 +24,29 @@
         console.log(item, "added");
         append(item);
     });
-    
+
     function append(item) {
         var html = "body" in item ? templates.large(item) : templates.small(item);
         $("#events").append(html);
     };
-    
+
 })();
+
+/**
+ * Yield name of Awesome Fonts icon from event
+ * @param {string} event - Name of Awesome Font icon
+ */ 
+function iconFromEvent(event) {
+    return {
+        "github-wiki": "book",
+        "github-fork": "hand-scissors",
+        "github-push": "code-fork",
+        "github-pull-request": "exchange",
+        "github-issue": "bug",
+        "github-issue-comment": "comment",
+        "github-commit-comment": "comment",
+    }[event] || "globe" // Generic icon for unhandled events
+}
 
 /**
  * Return basename of path
