@@ -1,6 +1,7 @@
 # Standard library
 import sys
 import json
+import datetime
 
 # 3rd party
 import flask
@@ -9,7 +10,7 @@ import flask.ext.restful
 from firebase import firebase
 
 # Local library
-from . import log
+from . import log, formatting
 
 app = flask.Flask(__name__)
 
@@ -31,42 +32,35 @@ class Handler(flask.ext.restful.Resource):
     def post(self):
         headers = flask.request.headers
         payload = flask.request.json
-    
+
         print("An event came in!")
         print(json.dumps(payload, indent=4))
 
-        if headers.get("X-Github-Event") == "gollum":
-            for page in payload["pages"]:
-                if page["action"] in ("created", "edited"):
-                    payload = {
-                        "icon": "book",
-                        "event": "github-wiki",
-                        "action": "(compare)",
-                        "actionUrl": page["html_url"],
-                        "author": payload["sender"]["login"],
-                        "avatar": payload["sender"]["avatar_url"],
-                        "message": "{action} {title} on {repo}".format(
-                            action=page["action"].title(),
-                            title=page["title"],
-                            repo=payload["repository"]["full_name"]
-                        ),
-                        "target": page["html_url"],
-                        "time": payload["repository"]["pushed_at"]
-                    }
+        event = headers.get("X-Github-Event")
+        event = formatting.convert_event(event) or event
 
-                    ref = firebase.FirebaseApplication('https://pyblish-web.firebaseio.com', None)
-                    result = ref.post(
-                        url="/events",
-                        data=payload,
-                        params={'print': 'pretty'},
-                        headers={'X_FANCY_HEADER': 'VERY FANCY'},
-                        connection=None
-                    )
+        try:
+            upayload = formatting.parse(payload, event)
+        except KeyError:
+            log.error("unsupported event: %s" % event)
+            return "Unsupported event: %s" % event
 
-            return "Gollum edit received!"
+        # Temporarily skip labels, they are sent once
+        # per labelling of a new issue.
+        if upayload["action"] == "labeled":
+            log.warning("Skipping event: %s" % event)
+            return "Skipping event: %s" % event
 
-        if headers.get("X-Github-Event") == "push":
-            return "Push event received"
+        ref = firebase.FirebaseApplication('https://pyblish-web.firebaseio.com', None)
+        result = ref.post(
+            url="/events",
+            data=upayload,
+            params={'print': 'pretty'},
+            headers={'X_FANCY_HEADER': 'VERY FANCY'},
+            connection=None
+        )
+
+        return "%s received!" % json.dumps(upayload, indent=4)
 
 
 api = flask.ext.restful.Api(app)

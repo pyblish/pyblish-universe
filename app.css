@@ -28,7 +28,10 @@ html {
     max-width: 700px;
     padding-bottom: 0px;
     padding-top: 0px;
-    margin-top: 150px; }
+    margin-top: 70px; }
+    html .wrapper > img {
+      display: block;
+      margin: auto; }
     html .wrapper h1 {
       font-size: 2em;
       font-weight: bold;
@@ -66,6 +69,10 @@ html {
         html .wrapper #events .event .time {
           font-size: 0.9em;
           color: #ccc; }
+        html .wrapper #events .event span.label {
+          font-size: 0.9em;
+          padding: 4px;
+          border-radius: 3px; }
         html .wrapper #events .event.event-large .icon {
           font-size: 2em; }
         html .wrapper #events .event.event-large .content {

@@ -11,15 +11,22 @@
         "large": Handlebars.compile($("#large-event-template").html()),
     }
 
-    ref.on("child_added", function(snapshot) {
+    ref.limitToLast(20).on("child_added", function(snapshot) {
         $(".loader").hide();  // Loader visible by default
 
         var item = snapshot.val();
+        
+        item.icon = {
+            "github-wiki": "book",
+            "github-issue": "bug",
+            "github-issue-comment": "comment",
+            "github-commit-comment": "comment",
+        }[item.event]
 
         item.authorName = basename(item.author);
         item.targetName = basename(item.target, -2);
         item.actionName = basename(item.action);
-        item.time = formatTime(item.time);
+        item.time = relativeTime(Date.now(), Date.parse(item.time));
 
         console.log(item, "added");
         append(item);
@@ -41,19 +48,44 @@ function basename (path, slice) {
     return (path ? path : "").split(/[\\/]/).slice(slice ? slice : -1).join("/");
 }
 
-function formatTime(time) {
-    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+/**
+ * Return relative time between current previous
+ */
+function relativeTime(current, previous) {
+
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
     
-    var d = new Date(Date.parse(time));
-    return sprintf(
-        "%(day)s %(date)s %(month)s %(hour)s:%(minute)s",
-        {
-            "day": days[d.getDay()],
-            "month": months[d.getMonth()],
-            "date": d.getMonth(),
-            "hour": d.getHours(),
-            "minute": d.getMinutes()
-        }
-    )
+    if (elapsed < 1) {
+        return "Just now";
+    }
+
+    else if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';   
+    }
+
+    else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';   
+    }
+
+    else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';   
+    }
+
+    else if (elapsed < msPerMonth) {
+        return Math.round(elapsed/msPerDay) + ' days ago';   
+    }
+
+    else if (elapsed < msPerYear) {
+        return Math.round(elapsed/msPerMonth) + ' months ago';   
+    }
+
+    else {
+        return Math.round(elapsed/msPerYear ) + ' years ago';   
+    }
 }
