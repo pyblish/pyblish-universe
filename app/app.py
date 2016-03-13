@@ -1,11 +1,9 @@
 # Standard library
 import sys
 import json
-import datetime
 
 # 3rd party
 import flask
-import requests
 import flask.ext.restful
 from firebase import firebase
 
@@ -27,7 +25,7 @@ def home():
 
 class Handler(flask.ext.restful.Resource):
     def get(self):
-        return "<p>This is where you'll point GitHub Events</p>"
+        return "This is where you'll point events."
 
     def post(self):
         headers = flask.request.headers
@@ -37,6 +35,11 @@ class Handler(flask.ext.restful.Resource):
         print(json.dumps(payload, indent=4))
 
         event = headers.get("X-Github-Event")
+
+        if event is None:
+            log.error("unsupported event: %s" % event)
+            return "Unsupported event: %s" % event
+
         event = formatting.convert_event(event) or event
 
         try:
@@ -51,13 +54,13 @@ class Handler(flask.ext.restful.Resource):
             log.warning("Skipping event: %s" % event)
             return "Skipping event: %s" % event
 
-        ref = firebase.FirebaseApplication('https://pyblish-web.firebaseio.com', None)
-        result = ref.post(
-            url="/events",
-            data=upayload,
-            params={'print': 'pretty'},
-            headers={'X_FANCY_HEADER': 'VERY FANCY'},
-            connection=None
+        firebase.FirebaseApplication(
+            "https://pyblish-web.firebaseio.com").post(
+                url="/events",
+                data=upayload,
+                params={'print': 'pretty'},
+                headers={'X_FANCY_HEADER': 'VERY FANCY'},
+                connection=None
         )
 
         return "%s received!" % json.dumps(upayload, indent=4)
