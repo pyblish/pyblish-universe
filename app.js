@@ -1,35 +1,91 @@
 /*global Firebase*/
 /*global Handlebars*/
+/*global sprintf*/
 
-function basename (path) {
-    return path.split(/[\\/]/).pop();
-}
 
 (function () {
     var ref = new Firebase("https://pyblish-web.firebaseio.com/events");
+    
+    var templates = {
+        "small": Handlebars.compile($("#small-event-template").html()),
+        "large": Handlebars.compile($("#large-event-template").html()),
+    }
 
-    ref.on("child_added", function(snapshot) {
+    ref.limitToLast(20).on("child_added", function(snapshot) {
+        $(".loader").hide();  // Loader visible by default
+
         var item = snapshot.val();
         
-        item.authorUrl = item.author;
-        item.author = basename(item.author);
-    
-        item.targetUrl = item.target;
-        item.target = basename(item.target);
+        item.icon = {
+            "github-wiki": "book",
+            "github-issue": "bug",
+            "github-issue-comment": "comment",
+            "github-commit-comment": "comment",
+        }[item.event]
+
+        item.authorName = basename(item.author);
+        item.targetName = basename(item.target, -2);
+        item.actionName = basename(item.action);
+        item.time = relativeTime(Date.now(), Date.parse(item.time));
 
         console.log(item, "added");
         append(item);
     });
     
     function append(item) {
-        // Template
-        var source   = $("#entry-template").html();
-        var template = Handlebars.compile(source);
-
-        var context = item;
-        var html = template(context);
-    
+        var html = "body" in item ? templates.large(item) : templates.small(item);
         $("#events").append(html);
     };
     
 })();
+
+/**
+ * Return basename of path
+ * @param {string} path - Absolute path
+ * @param {string} slice - Optional levels at end to return; defaults to -1
+ */
+function basename (path, slice) {
+    return (path ? path : "").split(/[\\/]/).slice(slice ? slice : -1).join("/");
+}
+
+/**
+ * Return relative time between current previous
+ */
+function relativeTime(current, previous) {
+
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+    
+    if (elapsed < 1) {
+        return "Just now";
+    }
+
+    else if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';   
+    }
+
+    else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';   
+    }
+
+    else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';   
+    }
+
+    else if (elapsed < msPerMonth) {
+        return Math.round(elapsed/msPerDay) + ' days ago';   
+    }
+
+    else if (elapsed < msPerYear) {
+        return Math.round(elapsed/msPerMonth) + ' months ago';   
+    }
+
+    else {
+        return Math.round(elapsed/msPerYear ) + ' years ago';   
+    }
+}
