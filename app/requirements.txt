@@ -1,5 +1,0 @@
-flask
-flask-restful
-requests
-python-firebase
-gunicorn
