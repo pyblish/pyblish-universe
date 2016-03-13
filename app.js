@@ -15,9 +15,10 @@
         $(".loader").hide();  // Loader visible by default
 
         var item = snapshot.val();
-        
+
         item.icon = {
             "github-wiki": "book",
+            "github-push": "code-fork",
             "github-issue": "bug",
             "github-issue-comment": "comment",
             "github-commit-comment": "comment",
