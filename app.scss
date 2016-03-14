@@ -20,14 +20,16 @@ html {
         top: 0px;
         left: 0px;
         right: 0px;
-    
-        a {
-            padding-left: 10px;
-        }
 
         img {
+            // Top logo
             height: 100%;
             margin: 10px;
+        }
+    
+        a {
+            // Top menu buttons
+            margin-left: 10px;
         }
     }
 

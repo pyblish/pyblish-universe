@@ -94,7 +94,11 @@ function relativeTime(current, previous) {
         return Math.round(elapsed/msPerMonth) + ' months ago';   
     }
 
+    else if (elapsed < msPerYear) {
+        return Math.round(elapsed/msPerYear) + ' years ago';   
+    }
+
     else {
-        return Math.round(elapsed/msPerYear ) + ' years ago';   
+        return "To infinity and beyond!"
     }
 }

@@ -16,11 +16,11 @@ html {
     top: 0px;
     left: 0px;
     right: 0px; }
-    html header a {
-      padding-left: 10px; }
     html header img {
       height: 100%;
       margin: 10px; }
+    html header a {
+      margin-left: 10px; }
   html .wrapper {
     position: relative;
     margin-left: auto;
