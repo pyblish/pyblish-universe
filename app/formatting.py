@@ -1,40 +1,48 @@
+import json
 import datetime
 
 
-def convert_event(event):
+def convert_event(headers):
     """Convert external event signature to one compatible with Universe
-    
+
     Arguments:
         event (str):
-    
+
     Returns:
         Universe as str, or None if no event was recognised.
 
     """
 
-    return {
-        "gollum": "github-wiki",
-        "issues": "github-issue",
-        "issue_comment": "github-issue-comment",
-        "commit_comment": "github-commit-comment",
-    }.get(event)
+    print("Finding event from headers: %s" % json.dumps(headers, indent=4))
+
+    if headers.get("X-Github-Event") == "gollum":
+        return "github-wiki"
+
+    if headers.get("X-Github-Event") == "issues":
+        return "github-issue"
+
+    if headers.get("X-Github-Event") == "issue_comment":
+        return "github-issue-comment"
+
+    if headers.get("X-Github-Event") == "commit_comment":
+        return "github-commit-comment"
 
 
 def parse(payload, event):
     """Parse `payload` based on type of `event`
-    
+
     Arguments:
         payload (dict): Dictionary of payload
         event (str): Type of event
-    
+
     Returns:
         dictionary of parsed payload, empty on failure.
-    
+
     Raises:
         NotImplementedError on unsupported event
 
     """
-    
+
     events = {
         "github-wiki": github_wiki,
         "github-issue": github_issue,
@@ -50,19 +58,19 @@ def parse(payload, event):
 
 def github_wiki(payload):
     """Map GitHub wiki event to universe
-    
+
     Arguments:
-        payload (dict): 
-    
+        payload (dict): GitHub event dictionary
+
     Returns:
         Modified payload (dict) if successful
         or None if unsuccessful
-    
+
     """
 
     # Only bother with the first modified page
     page = next(iter(payload["pages"]), None)
-    
+
     if page is None:
         raise TypeError("No page in edit, this is a bug")
 
