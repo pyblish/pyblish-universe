@@ -22,13 +22,13 @@ html {
         right: 0px;
 
         img {
-            // Top logo
+            // Logo
             height: 100%;
             margin: 10px;
         }
     
         a {
-            // Top menu buttons
+            // Menu buttons
             margin-left: 10px;
         }
     }
@@ -68,17 +68,14 @@ html {
                 border-bottom: 1px solid #eee;
 
                 .icon {
-                    line-height: 22px;
                     width: 25px;
                     padding: 10px;
                     align-self: flex-start;
                 }
                 
                 .author, .message, .target, .time {
-                    margin: 5px;
                     padding-left: 5px;
                     padding-right: 5px;
-                    height: 100%;
                 }
 
                 .author {

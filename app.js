@@ -8,17 +8,18 @@
     var templates = {
         "small": Handlebars.compile($("#small-event-template").html()),
         "large": Handlebars.compile($("#large-event-template").html()),
-    }
+    };
 
     ref.limitToLast(50).on("child_added", function(snapshot) {
         $(".loader").hide();  // Loader visible by default
 
         var item = snapshot.val();
+    
+        item.icon = item.icon || iconFromEvent(item.event);
+        item.useAwesomeIcon = item.icon.lastIndexOf("http", 0) != 0;
 
-        item.icon = iconFromEvent(item.event);
         item.authorName = basename(item.author);
         item.targetName = basename(item.target, -2);
-        item.actionName = basename(item.action);
         item.time = relativeTime(Date.now(), Date.parse(item.time));
 
         console.log(item, "added");
@@ -28,7 +29,7 @@
     function append(item) {
         var html = "body" in item ? templates.large(item) : templates.small(item);
         $("#events").append(html);
-    };
+    }
 
 })();
 
@@ -38,14 +39,16 @@
  */ 
 function iconFromEvent(event) {
     return {
+        "github-star": "star",
         "github-wiki": "book",
         "github-fork": "hand-scissors",
         "github-push": "code-fork",
         "github-pull-request": "exchange",
-        "github-issue": "bug",
+        "github-issue": "wrench",
         "github-issue-comment": "comment",
         "github-commit-comment": "comment",
-    }[event] || "globe" // Generic icon for unhandled events
+        "forum-newpost": "http://forums.pyblish.com/uploads/default/8/cc333ccab915e56b.png",
+    }[event] || "globe"; // Generic icon for unhandled events
 }
 
 /**
@@ -99,6 +102,6 @@ function relativeTime(current, previous) {
     }
 
     else {
-        return "To infinity and beyond!"
+        return "To infinity and beyond!";
     }
 }

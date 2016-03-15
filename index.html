@@ -6,7 +6,6 @@
     <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.3/sprintf.min.js"></script>-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
 
@@ -31,7 +30,11 @@
     -->
     <script id="large-event-template" type="text/x-handlebars-template">
     <div class="event event-large">
-      <i class="icon fa fa-{{icon}}"></i>
+      {{#if useAwesomeIcon}}
+        <i class="icon fa fa-{{icon}}"></i>
+      {{else}}
+        <img class="icon" src={{icon}}></img>
+      {{/if}}
       <div class="content">
         <span class="time">{{time}}</span>
         <div class="midsection">
