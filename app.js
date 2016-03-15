@@ -18,7 +18,15 @@
     
         item.icon = item.icon || iconFromEvent(item.event);
         item.useAwesomeIcon = item.icon.lastIndexOf("http", 0) != 0;
-        
+    
+        // Only show the body of newly opened issues
+        if (item.event == "github-issue") {
+            if (item.message.lastIndexOf("opened", 0) != 0) {
+                delete item.body;
+            }
+        }
+    
+        // Render the body using Markdown
         if (item.hasOwnProperty("body")) {
             item.body = marked(item.body);
         }
