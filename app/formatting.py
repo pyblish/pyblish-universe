@@ -1,8 +1,9 @@
 import json
+import requests
 import datetime
 
 
-def convert_event(headers):
+def convert_event(headers, payload=None):
     """Convert external event signature to one compatible with Universe
 
     Arguments:
@@ -13,22 +14,46 @@ def convert_event(headers):
 
     """
 
-    print("Finding event from headers: %s" % json.dumps(headers, indent=4))
+    if "X-Github-Event" in headers:
+        return {
+            "gist": "github-gist",
+            "ping": "github-ping",
+            "commit_comment": "github-comment",
+            "create": "github-create",
+            "delete": "github-delete",
+            "deployment": "github-deploy",
+            "deployment_status": "github-deploy-status",
+            "fork": "github-fork",
+            "gollum": "github-wiki",
+            "issue_comment": "github-comment",
+            "issues": "github-issue",
+            "member": "github-member",
+            "membership": "github-member",
+            "page_build": "github-page-build",
+            "pull_request_review_comment": "github-comment",
+            "pull_request": "github-pullrequest",
+            "push": "github-push",
+            "public": "github-repository-public",
+            "repository": "github-repository-created",
+            "release": "github-release",
+            "status": "github-status",
+            "team_add": "github-team",
+            "watch": "github-star"
+        }.get(headers.get("X-Github-Event"), None)
 
-    if headers.get("X-Github-Event") == "gollum":
-        return "github-wiki"
+    try:
+        data = {}
+        for item in payload:
+            data.update(item)
 
-    if headers.get("X-Github-Event") == "issues":
-        return "github-issue"
+        if "forums.pyblish.com" in data.get("referrer", ""):
+            return "forum-newpost"
 
-    if headers.get("X-Github-Event") == "issue_comment":
-        return "github-issue-comment"
-
-    if headers.get("X-Github-Event") == "commit_comment":
-        return "github-commit-comment"
+    except Exception as e:
+        return None
 
 
-def parse(payload, event):
+def parse(headers, payload):
     """Parse `payload` based on type of `event`
 
     Arguments:
@@ -42,18 +67,50 @@ def parse(payload, event):
         NotImplementedError on unsupported event
 
     """
-
-    events = {
-        "github-wiki": github_wiki,
-        "github-issue": github_issue,
-        "github-issue-comment": github_issue_comment,
-        "github-commit-comment": github_commit_comment,
-    }
-
-    if event not in events:
+    
+    event = convert_event(headers, payload)
+    
+    if not event:
         raise NotImplementedError("%s not supported" % event)
+    
+    if event == "github-wiki":
+        return github_wiki(payload)
 
-    return events[event](payload)
+    elif event == "github-issue":
+        return github_issue(payload)
+
+    elif event == "github-issue-comment":
+        return github_issue_comment(payload)
+
+    elif event == "github-commit-comment":
+        return github_commit_comment(payload)
+
+    elif event == "github-star":
+        return github_star(payload)
+
+    elif event == "forum-newpost":
+        return forum_new_post(payload)
+    
+    elif event.startswith("github-"):
+        return github_basics(event, payload)
+
+    else:
+        raise NotImplementedError("Unsupported event: %s" % event)
+
+
+def github_basics(event, payload):
+    return {
+        "event": event,
+        "author": payload["sender"]["login"],
+        "avatar": payload["sender"]["avatar_url"],
+        "message": "{user} triggered a \"{event}\" on {repo}".format(
+            user=payload["sender"]["login"],
+            event=event,
+            repo=payload.get("repository", {}).get("full_name", "GitHub")),
+        "target": payload.get("repository", {}).get(
+            "full_name", "https://github.com/pyblish"),
+        "time": datetime.datetime.utcnow().isoformat()
+    }
 
 
 def github_wiki(payload):
@@ -138,4 +195,78 @@ def github_issue(payload):
         "target": payload["issue"]["html_url"],
         "time": datetime.datetime.utcnow().isoformat(),
         "labels": payload["issue"]["labels"]
+    }
+    
+
+def github_star(payload):
+    return {
+        "event": "github-star",
+        "action": "Go to repository",
+        "actionUrl": payload["repository"]["html_url"],
+        "author": payload["sender"]["login"],
+        "avatar": payload["sender"]["avatar_url"],
+        "message": "{user} starred {repo}".format(
+            user=payload["sender"]["login"],
+            repo=payload["repository"]["html_url"]
+        ),
+        "target": payload["repository"]["html_url"],
+        "time": datetime.datetime.utcnow().isoformat(),
+    }
+
+
+def forum_new_post(payload):
+    """Parse webhook from forums
+    
+    The thing about forum events, is that they don't have any official API.
+    Therefore, each event is potentially unique in its data layout.
+    
+    Reference:
+        https://github.com/rcfox/Discourse-Webhooks
+
+    """
+
+    data = {}
+    for item in payload:
+        data.update(item)
+
+    target = data.get("referrer")
+    body = data.get("raw")
+    time = data.get("updated_at", data.get("baked_at"))
+    avatar_id = data.get("uploaded_avatar_id")
+    topic_id = data.get("topic_id")
+    user = data.get("username")
+    action = "replied" if (data.get("post_type") == 1) else "created"
+    avatar = "http://{base}/user_avatar/{base}/{user}/45/{id}_1.png".format(
+        base="forums.pyblish.com",
+        user=user,
+        id=avatar_id
+    )
+
+    # Dig deeper to find subject line.    
+    response = requests.get("http://forums.pyblish.com/t/{id}.json".format(id=topic_id))
+    
+    if response.status_code == 403:
+        raise IOError("Event came from a private source, "
+                      "such as a locked topic")
+
+    elif response.status_code != 200:
+        raise IOError("Event came from a post that could not be queried: %s"
+                      % topic_id)
+
+    title = response.json().get("fancy_title", "Unknown")
+
+    return {
+        "event": "forum-newpost",
+        "action": "Go to post",
+        "actionUrl": target,
+        "author": "Marcus",
+        "avatar": avatar,
+        "message": "{user} {action} to {subject}".format(
+            user=user,
+            action=action,
+            subject=title
+        ),
+        "body": body,
+        "target": target,
+        "time": time
     }

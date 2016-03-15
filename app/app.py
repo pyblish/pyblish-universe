@@ -32,27 +32,14 @@ class Handler(flask.ext.restful.Resource):
         payload = flask.request.json
 
         print("An event came in!")
-        print(json.dumps(payload, indent=4))
-
-        event = headers.get("X-Github-Event")
-
-        if event is None:
-            log.error("unsupported event: %s" % event)
-            return "Unsupported event: %s" % event
-
-        event = formatting.convert_event(event) or event
+        print("headers: %s" % headers)
+        print("payload: %s" % json.dumps(payload, indent=4))
 
         try:
-            upayload = formatting.parse(payload, event)
-        except KeyError:
-            log.error("unsupported event: %s" % event)
-            return "Unsupported event: %s" % event
-
-        # Temporarily skip labels, they are sent once
-        # per labelling of a new issue.
-        if upayload["action"] == "labeled":
-            log.warning("Skipping event: %s" % event)
-            return "Skipping event: %s" % event
+            upayload = formatting.parse(headers, payload)
+        except Exception as e:
+            log.error(e)
+            return str(e)
 
         firebase.FirebaseApplication(
             "https://pyblish-web.firebaseio.com").post(
