@@ -17,7 +17,7 @@
     -->
     <script id="small-event-template" type="text/x-handlebars-template">
     <div class="event event-small">
-      <i class="icon fa fa-{{icon}}"></i>
+      <a href="{{target}}"><i class="icon fa fa-{{icon}}" title="{{event}}"></i></a>
       <a class="author" href={{author}}>{{authorName}}</a>
       <span class="message">{{message}}</span>
       <a class="target" href={{target}}>{{targetName}}</a>
@@ -31,9 +31,9 @@
     <script id="large-event-template" type="text/x-handlebars-template">
     <div class="event event-large">
       {{#if useAwesomeIcon}}
-        <i class="icon fa fa-{{icon}}"></i>
+        <a href="{{target}}"><i class="icon fa fa-{{icon}}" title="{{event}}"></i></a>
       {{else}}
-        <img class="icon" src={{icon}}></img>
+        <a href="{{target}}"><img class="icon" src={{icon}} title="{{event}}"></img></a>
       {{/if}}
       <div class="content">
         <span class="time">{{time}}</span>

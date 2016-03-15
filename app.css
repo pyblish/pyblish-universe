@@ -55,6 +55,11 @@ html {
         html .wrapper #events .event .author, html .wrapper #events .event .message, html .wrapper #events .event .target, html .wrapper #events .event .time {
           padding-left: 5px;
           padding-right: 5px; }
+        html .wrapper #events .event .author, html .wrapper #events .event .target, html .wrapper #events .event .time {
+          width: auto;
+          flex-shrink: 0; }
+        html .wrapper #events .event .message {
+          flex-grow: 5; }
         html .wrapper #events .event .author {
           background: #efefef;
           border: 1px solid #dedede;
