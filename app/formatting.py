@@ -186,11 +186,7 @@ def github_issue_comment(payload):
 
 
 def github_issue(payload):
-    if payload["action"] == "labeled":
-        # These are not important
-        raise TypeError("Skipping labeling event")
-
-    return {
+    data = {
         "event": "github-issue",
         "action": "Go to issue",
         "actionUrl": payload["issue"]["html_url"],
