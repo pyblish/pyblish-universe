@@ -88,6 +88,9 @@ def parse(headers, payload):
     elif event == "github-star":
         return github_star(payload)
 
+    elif event == "github-push":
+        return github_push(payload)
+
     elif event == "forum-newpost":
         return forum_new_post(payload)
     
@@ -207,6 +210,23 @@ def github_star(payload):
         "avatar": payload["sender"]["avatar_url"],
         "message": "starred {repo}".format(
             user=payload["sender"]["login"],
+            repo=payload["repository"]["html_url"]
+        ),
+        "target": payload["repository"]["html_url"],
+        "time": datetime.datetime.utcnow().isoformat(),
+    }
+
+
+def github_push(payload):
+    return {
+        "event": "github-push",
+        "action": "Go to commit",
+        "actionUrl": payload["repository"]["html_url"],
+        "author": payload["sender"]["login"],
+        "avatar": payload["sender"]["avatar_url"],
+        "message": "pushed {commits} commits to {repo}".format(
+            user=payload["sender"]["login"],
+            commits=len(payload["commits"]),
             repo=payload["repository"]["html_url"]
         ),
         "target": payload["repository"]["html_url"],
