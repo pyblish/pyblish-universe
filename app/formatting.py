@@ -103,7 +103,7 @@ def github_basics(event, payload):
         "event": event,
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "{user} triggered a \"{event}\" on {repo}".format(
+        "message": "triggered a \"{event}\" on {repo}".format(
             user=payload["sender"]["login"],
             event=event,
             repo=payload.get("repository", {}).get("full_name", "GitHub")),
@@ -186,7 +186,7 @@ def github_issue(payload):
         "actionUrl": payload["issue"]["html_url"],
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "{action} issue #{issue} ({title})".format(
+        "message": "{action} issue {title} (#{issue})".format(
             action=payload["action"],
             issue=payload["issue"]["number"],
             title=payload["issue"]["title"]
@@ -205,7 +205,7 @@ def github_star(payload):
         "actionUrl": payload["repository"]["html_url"],
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "{user} starred {repo}".format(
+        "message": "starred {repo}".format(
             user=payload["sender"]["login"],
             repo=payload["repository"]["html_url"]
         ),
@@ -261,7 +261,7 @@ def forum_new_post(payload):
         "actionUrl": target,
         "author": "Marcus",
         "avatar": avatar,
-        "message": "{user} {action} to {subject}".format(
+        "message": "{action} to {subject}".format(
             user=user,
             action=action,
             subject=title
