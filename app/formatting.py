@@ -102,6 +102,9 @@ def parse(headers, payload):
 
 
 def github_basics(event, payload):
+    if event in ("github-page-build",):
+        raise TypeError("Skipping %s event" % event)
+
     return {
         "event": event,
         "author": payload["sender"]["login"],
@@ -183,6 +186,10 @@ def github_issue_comment(payload):
 
 
 def github_issue(payload):
+    if payload["action"] == "labeled":
+        # These are not important
+        raise TypeError("Skipping labeling event")
+
     return {
         "event": "github-issue",
         "action": "Go to issue",

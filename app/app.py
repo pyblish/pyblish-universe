@@ -14,7 +14,6 @@ app = flask.Flask(__name__)
 
 this = sys.modules[__name__]
 this.app = app
-this.pages = {}
 this.log = log
 
 
