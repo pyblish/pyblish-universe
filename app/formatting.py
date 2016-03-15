@@ -114,7 +114,7 @@ def github_basics(event, payload):
             event=event,
             repo=payload.get("repository", {}).get("full_name", "GitHub")),
         "target": payload.get("repository", {}).get(
-            "full_name", "https://github.com/pyblish"),
+            "html_url", "https://github.com/pyblish"),
         "time": datetime.datetime.utcnow().isoformat()
     }
 
