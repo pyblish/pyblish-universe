@@ -1,4 +1,5 @@
 /*global Firebase*/
+/*global marked*/
 /*global Handlebars*/
 
 
@@ -11,12 +12,16 @@
     };
 
     ref.limitToLast(50).on("child_added", function(snapshot) {
-        $(".loader").hide();  // Loader visible by default
+        $(".loader").hide();  // Hide loader at first batch
 
         var item = snapshot.val();
     
         item.icon = item.icon || iconFromEvent(item.event);
         item.useAwesomeIcon = item.icon.lastIndexOf("http", 0) != 0;
+        
+        if (item.hasOwnProperty("body")) {
+            item.body = marked(item.body);
+        }
 
         item.authorName = basename(item.author);
         item.targetName = basename(item.target, -2);

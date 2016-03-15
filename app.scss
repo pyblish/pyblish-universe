@@ -116,6 +116,10 @@ html {
                 
                 &.event-large {
                     
+                    & > a {
+                        align-self: flex-start;   
+                    }
+
                     .icon {
                         font-size: 2em;
                     }
@@ -129,7 +133,8 @@ html {
                             flex-direction: row;
                             padding: 5px;
 
-                            img {
+                            .avatar {
+                                flex-shrink: 0;
                                 margin-top: 4px;
                                 margin-right: 10px;
                                 height: 30px;
@@ -141,6 +146,32 @@ html {
                 }
             }
         }
+    }
+}
+
+// Markdown
+
+.body {
+
+    h1, h2, h3, h4, h5, h6, p, span {
+        margin-bottom: 16px;
+    }
+
+    h3 {
+        font-size: 1.5em;
+        line-height: 1.43;
+    }
+    
+    img {
+        max-width: 100%;
+        box-sizing: content-box;
+    }
+    
+    pre {
+        padding: 10px;
+        background: #f9f9f9;
+        border: 1px solid #dedede;
+        border-radius: 3px;
     }
 }
 

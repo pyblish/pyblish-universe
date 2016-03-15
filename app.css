@@ -75,6 +75,8 @@ html {
           font-size: 0.9em;
           padding: 4px;
           border-radius: 3px; }
+        html .wrapper #events .event.event-large > a {
+          align-self: flex-start; }
         html .wrapper #events .event.event-large .icon {
           font-size: 2em; }
         html .wrapper #events .event.event-large .content {
@@ -84,12 +86,27 @@ html {
             display: flex;
             flex-direction: row;
             padding: 5px; }
-            html .wrapper #events .event.event-large .content .body img {
+            html .wrapper #events .event.event-large .content .body .avatar {
+              flex-shrink: 0;
               margin-top: 4px;
               margin-right: 10px;
               height: 30px;
               width: 30px;
               border-radius: 3px; }
+
+.body h1, .body h2, .body h3, .body h4, .body h5, .body h6, .body p, .body span {
+  margin-bottom: 16px; }
+.body h3 {
+  font-size: 1.5em;
+  line-height: 1.43; }
+.body img {
+  max-width: 100%;
+  box-sizing: content-box; }
+.body pre {
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #dedede;
+  border-radius: 3px; }
 
 .loader,
 .loader:before,
