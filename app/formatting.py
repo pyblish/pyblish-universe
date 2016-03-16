@@ -76,11 +76,8 @@ def parse(headers, payload):
     elif event == "github-issue":
         return github_issue(payload)
 
-    elif event == "github-issue-comment":
-        return github_issue_comment(payload)
-
-    elif event == "github-commit-comment":
-        return github_commit_comment(payload)
+    elif event == "github-comment":
+        return github_comment(payload)
 
     elif event == "github-star":
         return github_star(payload)
@@ -103,12 +100,9 @@ def github_basics(event, payload):
         "event": event,
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "action": "triggered",
-        "message": "\"{event}\" on {repo}".format(
+        "message": "triggered \"{event}\" on".format(
             user=payload["sender"]["login"],
-            event=event,
-            repo=payload.get("repository", {}).get(
-                "full_name", "GitHub")),
+            event=event),
         "target": payload.get("repository", {}).get(
             "html_url", "https://github.com/pyblish"),
         "time": datetime.datetime.utcnow().isoformat()
@@ -147,28 +141,23 @@ def github_wiki(payload):
     }
 
 
-def github_commit_comment(payload):
-    return {
-        "event": "github-commit-comment",
-        "author": payload["sender"]["login"],
-        "avatar": payload["sender"]["avatar_url"],
-        "message": "commented on",
-        "target": payload["comment"]["html_url"],
-        "time": datetime.datetime.utcnow().isoformat()
-    }
-
-
-def github_issue_comment(payload):
-    return {
-        "event": "github-issue-comment",
+def github_comment(payload):
+    data = {
+        "event": "github-comment",
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
         "message": "commented on",
         "body": payload["comment"]["body"],
         "target": payload["comment"]["issue_url"],
         "time": datetime.datetime.utcnow().isoformat(),
-        "labels": payload["issue"]["labels"]
     }
+    
+    if "issue" in payload:
+        data.update({
+        "labels": payload["issue"]["labels"]
+        })
+    
+    return data
 
 
 def github_issue(payload):
