@@ -22,7 +22,6 @@ def convert_event(headers, payload=None):
             "create": "github-create",
             "delete": "github-delete",
             "deployment": "github-deploy",
-            "deployment_status": "github-deploy-status",
             "fork": "github-fork",
             "gollum": "github-wiki",
             "issue_comment": "github-comment",
@@ -33,8 +32,6 @@ def convert_event(headers, payload=None):
             "pull_request_review_comment": "github-comment",
             "pull_request": "github-pullrequest",
             "push": "github-push",
-            "public": "github-repository-public",
-            "repository": "github-repository-created",
             "release": "github-release",
             "status": "github-status",
             "team_add": "github-team",
@@ -102,17 +99,16 @@ def parse(headers, payload):
 
 
 def github_basics(event, payload):
-    if event in ("github-page-build",):
-        raise TypeError("Skipping %s event" % event)
-
     return {
         "event": event,
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "triggered a \"{event}\" on {repo}".format(
+        "action": "triggered",
+        "message": "\"{event}\" on {repo}".format(
             user=payload["sender"]["login"],
             event=event,
-            repo=payload.get("repository", {}).get("full_name", "GitHub")),
+            repo=payload.get("repository", {}).get(
+                "full_name", "GitHub")),
         "target": payload.get("repository", {}).get(
             "html_url", "https://github.com/pyblish"),
         "time": datetime.datetime.utcnow().isoformat()
@@ -139,8 +135,6 @@ def github_wiki(payload):
 
     return {
         "event": "github-wiki",
-        "action": "(compare)",
-        "actionUrl": page["html_url"],
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
         "message": "{action} {title} on {repo}".format(
@@ -156,13 +150,9 @@ def github_wiki(payload):
 def github_commit_comment(payload):
     return {
         "event": "github-commit-comment",
-        "action": "(compare)",
-        "actionUrl": payload["comment"]["html_url"],
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "commented on commit {repo}".format(
-            repo=payload["comment"]["full_name"]
-        ),
+        "message": "commented on",
         "target": payload["comment"]["html_url"],
         "time": datetime.datetime.utcnow().isoformat()
     }
@@ -171,13 +161,9 @@ def github_commit_comment(payload):
 def github_issue_comment(payload):
     return {
         "event": "github-issue-comment",
-        "action": "Go to comment",
-        "actionUrl": payload["comment"]["html_url"],
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "commented on issue #{issue}".format(
-            issue=payload["issue"]["number"]
-        ),
+        "message": "commented on",
         "body": payload["comment"]["body"],
         "target": payload["comment"]["issue_url"],
         "time": datetime.datetime.utcnow().isoformat(),
@@ -188,15 +174,9 @@ def github_issue_comment(payload):
 def github_issue(payload):
     data = {
         "event": "github-issue",
-        "action": "Go to issue",
-        "actionUrl": payload["issue"]["html_url"],
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "{action} issue {title} (#{issue})".format(
-            action=payload["action"],
-            issue=payload["issue"]["number"],
-            title=payload["issue"]["title"]
-        ),
+        "message": payload["action"],
         "body": payload["issue"]["body"],
         "target": payload["issue"]["html_url"],
         "time": datetime.datetime.utcnow().isoformat(),
@@ -207,14 +187,9 @@ def github_issue(payload):
 def github_star(payload):
     return {
         "event": "github-star",
-        "action": "Go to repository",
-        "actionUrl": payload["repository"]["html_url"],
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "starred {repo}".format(
-            user=payload["sender"]["login"],
-            repo=payload["repository"]["html_url"]
-        ),
+        "message": "starred",
         "target": payload["repository"]["html_url"],
         "time": datetime.datetime.utcnow().isoformat(),
     }
@@ -223,15 +198,16 @@ def github_star(payload):
 def github_push(payload):
     return {
         "event": "github-push",
-        "action": "Go to commit",
-        "actionUrl": payload["repository"]["html_url"],
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "pushed {commits} commits to {repo}".format(
-            user=payload["sender"]["login"],
+        "message": "pushed {commits} commits to".format(
             commits=len(payload["commits"]),
-            repo=payload["repository"]["html_url"]
         ),
+        "body": "\n".join("- [{commit}]({commitUrl}) {message}".format(
+            commit=commit["id"][:7],
+            commitUrl=commit["url"],
+            message=commit["message"])
+                for commit in payload["commits"]),
         "target": payload["repository"]["html_url"],
         "time": datetime.datetime.utcnow().isoformat(),
     }
@@ -258,7 +234,7 @@ def forum_new_post(payload):
     avatar_id = data.get("uploaded_avatar_id")
     topic_id = data.get("topic_id")
     user = data.get("username")
-    action = "replied" if (data.get("post_type") == 1) else "created"
+    action = "replied to" if (data.get("post_type") == 1) else "created"
     avatar = "http://{base}/user_avatar/{base}/{user}/45/{id}_1.png".format(
         base="forums.pyblish.com",
         user=user,
@@ -280,16 +256,11 @@ def forum_new_post(payload):
 
     return {
         "event": "forum-newpost",
-        "action": "Go to post",
-        "actionUrl": target,
-        "author": "Marcus",
+        "author": user,
         "avatar": avatar,
-        "message": "{action} to {subject}".format(
-            user=user,
-            action=action,
-            subject=title
-        ),
+        "message": action,
         "body": body,
         "target": target,
+        "targetName": title,
         "time": time
     }
