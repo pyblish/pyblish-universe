@@ -189,8 +189,9 @@ def github_push(payload):
         "event": "github-push",
         "author": payload["sender"]["login"],
         "avatar": payload["sender"]["avatar_url"],
-        "message": "pushed {commits} commits to".format(
+        "message": "pushed {commits} commit{plural} to".format(
             commits=len(payload["commits"]),
+            plural="s" if len(payload["commits"]) > 1 else ""
         ),
         "body": "\n".join("- [{commit}]({commitUrl}) {message}".format(
             commit=commit["id"][:7],
